@@ -1,0 +1,253 @@
+CHE_ROUTER
+-----------
+en
+config t
+ho CHE_Router
+int fa 0/0
+ip add 10.0.0.1 255.0.0.0
+no sh
+ex
+
+int fa 0/1
+ip add 20.0.0.1 255.0.0.0
+no sh 
+ex
+
+ip route 0.0.0.0 0.0.0.0 20.0.0.2
+
+HYD_Router
+-----------
+
+en
+config t
+ho HYD_Router
+int fa 0/0
+ip add 192.168.1.1 255.255.255.0
+no sh
+ex
+
+int fa 0/1
+ip add 90.0.0.1 255.0.0.0
+no sh 
+ex
+
+ip route 0.0.0.0 0.0.0.0 90.0.0.2
+
+
+BNG_Router
+-----------
+en
+config t
+ho BNG_Router
+int fa 0/0
+ip add 192.168.1.1 255.255.255.0
+no sh
+ex
+
+int fa 0/1
+ip add 70.0.0.1 255.0.0.0
+no sh 
+ex
+
+ip route 0.0.0.0 0.0.0.0 70.0.0.2
+
+
+PUNE_Router
+------------
+en
+config t
+ho PUNE_Router
+int fa 0/0
+ip add 172.16.0.1 255.255.0.0
+no sh
+ex
+
+int fa 0/1
+ip add 80.0.0.1 255.0.0.0
+no sh 
+ex
+
+ip route 0.0.0.0 0.0.0.0 80.0.0.2
+
+
+ISP_ROUTER_CONFIG
+-------------------
+ISP-1
+-----------
+en
+config t
+ho ISP_1
+int fa 0/0
+ip add 20.0.0.2 255.0.0.0
+no sh
+ex
+
+int fa 0/1
+ip add 90.0.0.2 255.0.0.0
+no sh
+ex
+
+int eth 1/0
+ip add 30.0.0.1 255.0.0.0
+no sh
+ex
+
+int eth 1/1
+ip add 60.0.0.2 255.0.0.0
+no sh
+ex
+
+RIP_ENABLE
+-----------
+
+router rip
+net 20.0.0.0
+net 30.0.0.0
+net 90.0.0.0 
+net 60.0.0.0
+ex
+
+ISP_2
+-------
+en
+config t
+ho ISP_2
+int fa 0/0
+ip add 30.0.0.2 255.0.0.0
+no sh
+ex
+
+int fa 0/1
+ip add 40.0.0.1 255.0.0.0
+no sh
+ex
+
+
+RIP_ENABLE
+-----------
+
+router rip
+net 40.0.0.0
+net 30.0.0.0
+exit
+
+ISP_3
+---------
+en
+config t
+ho ISP_3
+int fa 0/0
+ip add 70.0.0.2 255.0.0.0
+no sh
+ex
+
+int fa 0/1
+ip add 80.0.0.2 255.0.0.0
+no sh
+ex
+
+int eth 1/0
+ip add 40.0.0.2 255.0.0.0
+no sh
+ex
+
+int eth 1/1
+ip add 50.0.0.1 255.0.0.0
+no sh
+ex
+
+RIP_ENABLE
+-----------
+
+router rip
+net 40.0.0.0
+net 50.0.0.0
+net 70.0.0.0 
+net 80.0.0.0
+ex
+
+ISP_4
+---------
+en
+config t
+ho ISP_4
+int fa 0/0
+ip add 50.0.0.2 255.0.0.0
+no sh
+ex
+
+int fa 0/1
+ip add 60.0.0.1 255.0.0.0
+no sh
+ex
+
+RIP_ENABLE
+-----------
+
+router rip
+net 50.0.0.0
+net 60.0.0.0
+
+CHE_Router
+------------
+dynamic overload NAT 
+--------------------
+int fa 0/0
+ip nat inside
+ex
+
+int fa 0/1
+ip nat outside
+ex
+access-list 10 permit 10.0.0.0 0.255.255.255
+ip nat inside source list 10 int fa0/1 overload
+ex
+
+BNG_ROUTER
+------------
+STATIC_NAT
+------------
+int fa 0/0
+ip nat inside
+ex
+
+int fa 0/1
+ip nat outside
+ex
+
+ip nat inside source static 192.168.1.10 70.0.0.10
+ex
+
+PUNE_Router
+------------
+STATIC_NAT
+------------
+int fa 0/0
+ip nat inside
+ex
+
+int fa 0/1
+ip nat outside
+ex
+
+ip nat inside source static 172.16.0.10 80.0.0.10
+ip nat inside source static 172.16.0.20 80.0.0.20
+ip nat inside source static 172.16.0.30 80.0.0.30
+ex
+
+HYD_Router
+------------
+Dynamic_NAT
+--------------
+int fa 0/0
+ip nat inside
+ex
+
+int fa 0/1
+ip nat outside
+ex
+
+access-list 10 permit 192.168.1.0 0.0.0.255
+ip nat pool hyd 90.0.0.11 90.0.0.12 netmask 255.0.0.0
+ip nat inside source list 10 pool hyd
+ex  
